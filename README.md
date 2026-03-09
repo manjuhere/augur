@@ -127,7 +127,8 @@ dart pub get
 {
   "mcpServers": {
     "augur": {
-      "command": "augur"
+      "command": "dart",
+      "args": ["pub", "global", "run", "augur:server"]
     }
   }
 }
@@ -139,7 +140,8 @@ dart pub get
 {
   "mcpServers": {
     "augur": {
-      "command": "augur"
+      "command": "dart",
+      "args": ["pub", "global", "run", "augur:server"]
     }
   }
 }
@@ -151,7 +153,8 @@ dart pub get
 {
   "mcpServers": {
     "augur": {
-      "command": "augur"
+      "command": "dart",
+      "args": ["pub", "global", "run", "augur:server"]
     }
   }
 }
@@ -160,17 +163,18 @@ dart pub get
 **OpenAI Codex** — run:
 
 ```bash
-codex mcp add augur -- augur
+codex mcp add augur -- dart pub global run augur:server
 ```
 
 Or add to `~/.codex/config.toml`:
 
 ```toml
 [mcp_servers.augur]
-command = "augur"
+command = "dart"
+args = ["pub", "global", "run", "augur:server"]
 ```
 
-> If you installed from source instead of pub.dev, use `"command": "dart"` with `"args": ["run", "/path/to/augur/bin/server.dart"]` (or for Codex: `command = "dart"` and `args = ["run", "/path/to/augur/bin/server.dart"]`).
+> If you installed from source, use `"args": ["run", "/path/to/augur/bin/server.dart"]` instead.
 
 For a detailed walkthrough, see [GETTING_STARTED.md](doc/GETTING_STARTED.md).
 

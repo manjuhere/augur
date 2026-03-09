@@ -50,7 +50,9 @@ dart compile exe bin/server.dart -o augur
 
 ## MCP Server Configuration
 
-After installing via pub.dev (`dart pub global activate`), the command is simply `augur`. If you installed from source, use `dart` with `args: ["run", "/path/to/bin/server.dart"]` instead.
+After installing via `dart pub global activate augur`, use `dart pub global run augur:server` as the command in your MCP config. This works universally because `dart` is already on your system PATH.
+
+If you installed from source, use `"command": "dart"` with `"args": ["run", "/path/to/augur/bin/server.dart"]` instead.
 
 ### Claude Code
 
@@ -60,7 +62,8 @@ Add to `~/.claude/settings.json`:
 {
   "mcpServers": {
     "augur": {
-      "command": "augur"
+      "command": "dart",
+      "args": ["pub", "global", "run", "augur:server"]
     }
   }
 }
@@ -74,7 +77,8 @@ Add to `.cursor/mcp.json` in your project or global Cursor settings:
 {
   "mcpServers": {
     "augur": {
-      "command": "augur"
+      "command": "dart",
+      "args": ["pub", "global", "run", "augur:server"]
     }
   }
 }
@@ -88,7 +92,8 @@ Add to your VS Code `settings.json`:
 {
   "mcpServers": {
     "augur": {
-      "command": "augur"
+      "command": "dart",
+      "args": ["pub", "global", "run", "augur:server"]
     }
   }
 }
@@ -99,30 +104,20 @@ Add to your VS Code `settings.json`:
 Add via CLI:
 
 ```bash
-codex mcp add augur -- augur
+codex mcp add augur -- dart pub global run augur:server
 ```
 
 Or add to `~/.codex/config.toml`:
 
 ```toml
 [mcp_servers.augur]
-command = "augur"
-```
-
-With environment variables:
-
-```toml
-[mcp_servers.augur]
-command = "augur"
-
-[mcp_servers.augur.env]
-GITHUB_TOKEN = "ghp_your_token_here"
-LOG_LEVEL = "debug"
+command = "dart"
+args = ["pub", "global", "run", "augur:server"]
 ```
 
 ### Windsurf
 
-Follow Windsurf's MCP server configuration. The command is the same as above.
+Follow Windsurf's MCP server configuration. The command and args are the same as above.
 
 ### With environment variables
 
@@ -132,7 +127,8 @@ For JSON-based clients (Claude Code, Cursor, VS Code), add an `env` block:
 {
   "mcpServers": {
     "augur": {
-      "command": "augur",
+      "command": "dart",
+      "args": ["pub", "global", "run", "augur:server"],
       "env": {
         "GITHUB_TOKEN": "ghp_your_token_here",
         "LOG_LEVEL": "debug"
@@ -142,7 +138,17 @@ For JSON-based clients (Claude Code, Cursor, VS Code), add an `env` block:
 }
 ```
 
-For Codex, see the TOML example above.
+For Codex, add an `[mcp_servers.augur.env]` table:
+
+```toml
+[mcp_servers.augur]
+command = "dart"
+args = ["pub", "global", "run", "augur:server"]
+
+[mcp_servers.augur.env]
+GITHUB_TOKEN = "ghp_your_token_here"
+LOG_LEVEL = "debug"
+```
 
 ## Setting Up a GitHub Token (Recommended)
 
