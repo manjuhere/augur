@@ -1,4 +1,5 @@
 /// Models for breaking changes between package versions.
+library;
 
 enum Severity { critical, major, minor, info }
 

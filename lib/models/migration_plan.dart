@@ -1,4 +1,5 @@
 /// Models for migration plans.
+library;
 
 enum StepType { pubspecChange, codeChange, runCommand, manual }
 

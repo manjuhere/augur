@@ -1,4 +1,5 @@
 /// Models for API usage search results.
+library;
 
 class ApiUsageResult {
   const ApiUsageResult({

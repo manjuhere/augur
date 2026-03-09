@@ -3,9 +3,17 @@
 ///
 /// All methods are static and side-effect-free so they can be called from
 /// anywhere without instantiation.
+library;
 
 /// A single section parsed from a Markdown document.
 class MarkdownSection {
+
+  const MarkdownSection({
+    required this.heading,
+    required this.level,
+    required this.content,
+    this.children = const [],
+  });
   /// The heading text (without the leading `#` characters).
   final String heading;
 
@@ -18,13 +26,6 @@ class MarkdownSection {
 
   /// Nested sub-sections.
   final List<MarkdownSection> children;
-
-  const MarkdownSection({
-    required this.heading,
-    required this.level,
-    required this.content,
-    this.children = const [],
-  });
 
   @override
   String toString() =>
@@ -355,25 +356,25 @@ class MarkdownParser {
 // ---------------------------------------------------------------------------
 
 class _HeadingInfo {
-  final int level;
-  final String heading;
-  final int lineIndex;
 
   const _HeadingInfo({
     required this.level,
     required this.heading,
     required this.lineIndex,
   });
+  final int level;
+  final String heading;
+  final int lineIndex;
 }
 
 class _FlatSection {
-  final int level;
-  final String heading;
-  final String content;
 
   const _FlatSection({
     required this.level,
     required this.heading,
     required this.content,
   });
+  final int level;
+  final String heading;
+  final String content;
 }

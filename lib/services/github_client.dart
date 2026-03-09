@@ -4,17 +4,13 @@
 /// content from public (and optionally private) GitHub repositories. Auth is
 /// handled transparently by [HttpClientWrapper] when a `GITHUB_TOKEN`
 /// environment variable is set.
+library;
 
 import '../cache/cache_manager.dart';
 import '../utils/http_client.dart';
 import '../utils/logger.dart';
 
 class GitHubClient {
-  final HttpClientWrapper _http;
-  final CacheManager _cache;
-
-  static const _apiBase = 'https://api.github.com';
-  static const _rawBase = 'https://raw.githubusercontent.com';
 
   /// Creates a new GitHub API client.
   ///
@@ -25,6 +21,11 @@ class GitHubClient {
     HttpClientWrapper? httpClient,
   })  : _cache = cacheManager,
         _http = httpClient ?? HttpClientWrapper();
+  final HttpClientWrapper _http;
+  final CacheManager _cache;
+
+  static const _apiBase = 'https://api.github.com';
+  static const _rawBase = 'https://raw.githubusercontent.com';
 
   // ---------------------------------------------------------------------------
   // URL parsing

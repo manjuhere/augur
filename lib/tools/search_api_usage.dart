@@ -2,9 +2,9 @@ import '../services/codebase_analyzer.dart';
 import '../utils/logger.dart';
 
 class SearchApiUsageTool {
-  final CodebaseAnalyzer _analyzer;
 
   SearchApiUsageTool(this._analyzer);
+  final CodebaseAnalyzer _analyzer;
 
   /// Execute the search_api_usage tool
   /// Input: projectPath, apis (list of strings), packageFilter?

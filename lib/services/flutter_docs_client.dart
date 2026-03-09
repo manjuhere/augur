@@ -6,6 +6,7 @@
 /// The source Markdown lives in the flutter/website repository on GitHub.
 /// This client fetches and parses that index page to produce a structured
 /// list of breaking changes, optionally filtered to a Flutter version range.
+library;
 
 import 'package:pub_semver/pub_semver.dart';
 
@@ -14,6 +15,16 @@ import '../utils/http_client.dart';
 import '../utils/logger.dart';
 
 class FlutterDocsClient {
+
+  /// Creates a new Flutter docs client.
+  ///
+  /// An optional [httpClient] can be provided for testing; otherwise a default
+  /// [HttpClientWrapper] is created automatically.
+  FlutterDocsClient({
+    required CacheManager cacheManager,
+    HttpClientWrapper? httpClient,
+  })  : _cache = cacheManager,
+        _http = httpClient ?? HttpClientWrapper();
   final HttpClientWrapper _http;
   final CacheManager _cache;
 
@@ -33,16 +44,6 @@ class FlutterDocsClient {
   static const _breakingChangesDetailBase =
       'https://raw.githubusercontent.com/flutter/website/main/'
       'src/content/release/breaking-changes';
-
-  /// Creates a new Flutter docs client.
-  ///
-  /// An optional [httpClient] can be provided for testing; otherwise a default
-  /// [HttpClientWrapper] is created automatically.
-  FlutterDocsClient({
-    required CacheManager cacheManager,
-    HttpClientWrapper? httpClient,
-  })  : _cache = cacheManager,
-        _http = httpClient ?? HttpClientWrapper();
 
   // ---------------------------------------------------------------------------
   // All breaking changes

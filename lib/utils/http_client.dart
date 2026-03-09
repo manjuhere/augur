@@ -3,6 +3,7 @@
 ///
 /// All network activity is routed through this wrapper so that retries,
 /// backoff, and auth are handled consistently across the codebase.
+library;
 
 import 'dart:async';
 import 'dart:convert';
@@ -14,15 +15,15 @@ import 'logger.dart';
 
 /// A lightweight value object for HTTP responses.
 class HttpResponse {
-  final int statusCode;
-  final String body;
-  final Map<String, String> headers;
 
   const HttpResponse({
     required this.statusCode,
     required this.body,
     required this.headers,
   });
+  final int statusCode;
+  final String body;
+  final Map<String, String> headers;
 
   /// Whether the status code is in the 2xx range.
   bool get isSuccess => statusCode >= 200 && statusCode < 300;
@@ -47,6 +48,14 @@ class HttpResponse {
 /// - GitHub API `Accept` header (`application/vnd.github.v3+json`).
 /// - Debug-level request/response logging via [Logger].
 class HttpClientWrapper {
+
+  /// Creates a new wrapper.
+  ///
+  /// An optional [client] may be provided for testing. The GitHub token is
+  /// read from the `GITHUB_TOKEN` environment variable.
+  HttpClientWrapper({http.Client? client})
+      : _client = client ?? http.Client(),
+        _githubToken = Platform.environment['GITHUB_TOKEN'];
   final http.Client _client;
   final String? _githubToken;
 
@@ -56,14 +65,6 @@ class HttpClientWrapper {
   /// Base delay for exponential backoff. The actual delay for attempt *n* is
   /// `_baseDelay * 2^n`.
   static const Duration _baseDelay = Duration(seconds: 1);
-
-  /// Creates a new wrapper.
-  ///
-  /// An optional [client] may be provided for testing. The GitHub token is
-  /// read from the `GITHUB_TOKEN` environment variable.
-  HttpClientWrapper({http.Client? client})
-      : _client = client ?? http.Client(),
-        _githubToken = Platform.environment['GITHUB_TOKEN'];
 
   // ---------------------------------------------------------------------------
   // Public API

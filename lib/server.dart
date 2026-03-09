@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:mcp_dart/mcp_dart.dart' hide Logger;
-import 'package:mcp_dart/src/shared/json_schema/json_schema.dart';
 
 import 'package:augur/cache/cache_manager.dart';
 import 'package:augur/services/pub_api_client.dart';
@@ -26,6 +25,12 @@ import 'package:augur/utils/logger.dart';
 /// Creates an [McpServer] instance, registers all six tools with their JSON
 /// schemas, and exposes a [run] method that connects via stdio transport.
 class AugurServer {
+
+  AugurServer() {
+    _initServices();
+    _initServer();
+    _registerTools();
+  }
   late final McpServer _server;
 
   // Services
@@ -39,12 +44,6 @@ class AugurServer {
   late final CodebaseAnalyzer _codebaseAnalyzer;
   late final VersionResolver _versionResolver;
   late final CascadeResolver _cascadeResolver;
-
-  AugurServer() {
-    _initServices();
-    _initServer();
-    _registerTools();
-  }
 
   /// Initialise all shared service instances.
   void _initServices() {
@@ -72,8 +71,8 @@ class AugurServer {
   /// Create the MCP server with metadata and capabilities.
   void _initServer() {
     _server = McpServer(
-      Implementation(name: 'augur', version: '1.0.0'),
-      options: McpServerOptions(
+      const Implementation(name: 'augur', version: '1.0.0'),
+      options: const McpServerOptions(
         capabilities: ServerCapabilities(tools: ServerCapabilitiesTools()),
       ),
     );
@@ -382,7 +381,6 @@ class AugurServer {
             _pubApiClient,
             _githubClient,
             _changelogParser,
-            _versionResolver,
           );
           final result = await tool.execute(args);
           return CallToolResult(

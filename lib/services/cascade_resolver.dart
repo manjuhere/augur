@@ -4,6 +4,7 @@
 /// different versions of its own dependencies. If any of those transitive
 /// requirements conflict with the project's current lockfile, they are
 /// reported as [CascadingImpact]s.
+library;
 
 import '../models/analysis_result.dart';
 import '../models/pubspec_data.dart';

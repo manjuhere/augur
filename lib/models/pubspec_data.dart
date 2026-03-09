@@ -1,4 +1,5 @@
 /// Data models for parsed pubspec.yaml and pubspec.lock data.
+library;
 
 class PubspecData {
   const PubspecData({

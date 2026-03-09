@@ -4,16 +4,13 @@
 /// contents, and package scores. All responses are cached via [CacheManager]
 /// to avoid redundant network round-trips during a single upgrade analysis
 /// session.
+library;
 
 import '../cache/cache_manager.dart';
 import '../utils/http_client.dart';
 import '../utils/logger.dart';
 
 class PubApiClient {
-  final HttpClientWrapper _http;
-  final CacheManager _cache;
-
-  static const _baseUrl = 'https://pub.dev/api';
 
   /// Creates a new pub.dev API client.
   ///
@@ -24,6 +21,10 @@ class PubApiClient {
     HttpClientWrapper? httpClient,
   })  : _cache = cacheManager,
         _http = httpClient ?? HttpClientWrapper();
+  final HttpClientWrapper _http;
+  final CacheManager _cache;
+
+  static const _baseUrl = 'https://pub.dev/api';
 
   // ---------------------------------------------------------------------------
   // Package info

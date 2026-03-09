@@ -3,6 +3,7 @@
 /// This is critical for stdio-based MCP servers where stdout is reserved
 /// for MCP protocol messages. Any logging to stdout would corrupt the
 /// protocol stream.
+library;
 
 import 'dart:io';
 
@@ -24,9 +25,11 @@ enum LogLevel { debug, info, warn, error }
 /// - `warn`  — potential issues that are non-fatal
 /// - `error` — failures that need attention
 class Logger {
-  static LogLevel _level = LogLevel.info;
 
   Logger._();
+
+  /// Current log level. Can be overridden programmatically (useful in tests).
+  static LogLevel level = LogLevel.info;
 
   /// Initialise the logger from the `LOG_LEVEL` environment variable.
   ///
@@ -35,21 +38,15 @@ class Logger {
   static void init() {
     final envLevel = Platform.environment['LOG_LEVEL']?.toLowerCase();
     if (envLevel == null || envLevel.isEmpty) {
-      _level = LogLevel.info;
+      level = LogLevel.info;
       return;
     }
-    _level = LogLevel.values.firstWhere(
+    level = LogLevel.values.firstWhere(
       (l) => l.name == envLevel,
       orElse: () => LogLevel.info,
     );
-    debug('Logger initialised at level: ${_level.name}');
+    debug('Logger initialised at level: ${level.name}');
   }
-
-  /// Override the log level programmatically (useful in tests).
-  static set level(LogLevel newLevel) => _level = newLevel;
-
-  /// Current log level.
-  static LogLevel get level => _level;
 
   /// Log a debug-level message.
   static void debug(String message) => _log(LogLevel.debug, message);
@@ -68,9 +65,9 @@ class Logger {
   }
 
   /// Internal writer — guards on level and writes to stderr only.
-  static void _log(LogLevel level, String message) {
-    if (level.index < _level.index) return;
+  static void _log(LogLevel msgLevel, String message) {
+    if (msgLevel.index < level.index) return;
     final timestamp = DateTime.now().toIso8601String();
-    stderr.writeln('[$timestamp] [${level.name.toUpperCase()}] $message');
+    stderr.writeln('[$timestamp] [${msgLevel.name.toUpperCase()}] $message');
   }
 }

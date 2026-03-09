@@ -1,4 +1,5 @@
 /// Models for impact analysis results.
+library;
 
 import 'breaking_change.dart';
 

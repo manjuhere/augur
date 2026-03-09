@@ -6,6 +6,7 @@
 /// 3. Map breaking changes to actual code locations via AST analysis.
 /// 4. Detect cascading dependency conflicts.
 /// 5. Compute a risk score and produce a structured [AnalysisResult].
+library;
 
 import 'dart:async';
 import 'dart:math' as math;
@@ -24,14 +25,6 @@ import '../services/cascade_resolver.dart';
 import '../utils/logger.dart';
 
 class AnalyzeImpactTool {
-  final PubspecParser _pubspecParser;
-  final PubApiClient _pubApi;
-  final GitHubClient _github;
-  final FlutterDocsClient _flutterDocs;
-  final ChangelogParser _changelogParser;
-  final CodebaseAnalyzer _codebaseAnalyzer;
-  final VersionResolver _versionResolver;
-  final CascadeResolver _cascadeResolver;
 
   AnalyzeImpactTool({
     required PubspecParser pubspecParser,
@@ -50,6 +43,14 @@ class AnalyzeImpactTool {
         _codebaseAnalyzer = codebaseAnalyzer,
         _versionResolver = versionResolver,
         _cascadeResolver = cascadeResolver;
+  final PubspecParser _pubspecParser;
+  final PubApiClient _pubApi;
+  final GitHubClient _github;
+  final FlutterDocsClient _flutterDocs;
+  final ChangelogParser _changelogParser;
+  final CodebaseAnalyzer _codebaseAnalyzer;
+  final VersionResolver _versionResolver;
+  final CascadeResolver _cascadeResolver;
 
   /// Severity weights used in risk score calculation.
   static const _severityWeights = <Severity, double>{

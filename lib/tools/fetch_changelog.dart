@@ -1,17 +1,15 @@
 import '../services/pub_api_client.dart';
 import '../services/github_client.dart';
 import '../services/changelog_parser.dart';
-import '../services/version_resolver.dart';
 import '../utils/logger.dart';
 
 class FetchChangelogTool {
+
+  FetchChangelogTool(
+      this._pubApi, this._github, this._changelogParser);
   final PubApiClient _pubApi;
   final GitHubClient _github;
   final ChangelogParser _changelogParser;
-  final VersionResolver _versionResolver;
-
-  FetchChangelogTool(
-      this._pubApi, this._github, this._changelogParser, this._versionResolver);
 
   /// Execute fetch_changelog
   /// Input: packageName, fromVersion?, toVersion?, maxEntries?

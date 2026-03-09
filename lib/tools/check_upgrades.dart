@@ -5,11 +5,11 @@ import '../services/version_resolver.dart';
 import '../utils/logger.dart';
 
 class CheckUpgradesTool {
+
+  CheckUpgradesTool(this._parser, this._pubApi, this._versionResolver);
   final PubspecParser _parser;
   final PubApiClient _pubApi;
   final VersionResolver _versionResolver;
-
-  CheckUpgradesTool(this._parser, this._pubApi, this._versionResolver);
 
   /// Execute check_available_upgrades
   /// Input: projectPath, packageName?, includePrerelease?, targetFlutterVersion?

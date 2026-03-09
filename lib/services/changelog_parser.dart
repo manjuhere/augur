@@ -6,6 +6,7 @@
 /// - `## [6.0.0] - 2023-01-15`
 /// - `## v6.0.0`
 /// - `# 6.0.0`
+library;
 
 import '../models/breaking_change.dart';
 import '../utils/logger.dart';

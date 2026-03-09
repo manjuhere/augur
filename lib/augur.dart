@@ -1,5 +1,6 @@
 /// Augur - Read the signs before you upgrade.
 /// MCP server for analyzing Flutter/Dart upgrade impact.
+library;
 
 export 'server.dart';
 export 'models/pubspec_data.dart';

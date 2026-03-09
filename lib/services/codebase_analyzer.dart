@@ -10,6 +10,7 @@
 ///   but produces accurate [ApiMatch.resolvedType] and [ApiMatch.importSource].
 /// - **Unresolved**: Fast parse via [getParsedUnit]. Only matches by name
 ///   without type info. Useful for quick scans.
+library;
 
 import 'dart:io';
 
@@ -17,7 +18,7 @@ import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:path/path.dart' as p;
 
@@ -49,8 +50,6 @@ const List<String> _kExcludedDirSegments = [
 ];
 
 class CodebaseAnalyzer {
-  /// Maximum number of Dart files to consider per scan.
-  final int _maxFiles;
 
   /// Creates a [CodebaseAnalyzer].
   ///
@@ -62,6 +61,8 @@ class CodebaseAnalyzer {
             int.tryParse(
                 Platform.environment['MAX_FILES_TO_ANALYZE'] ?? '') ??
             _kDefaultMaxFiles;
+  /// Maximum number of Dart files to consider per scan.
+  final int _maxFiles;
 
   // ---------------------------------------------------------------------------
   // File discovery
@@ -429,6 +430,12 @@ String _readLineContent(String filePath, int lineNumber) {
 /// When [packageFilter] is set, a match is only emitted if the resolved
 /// element's library URI contains `package:<packageFilter>`.
 class _ApiUsageVisitor extends RecursiveAstVisitor<void> {
+
+  _ApiUsageVisitor({
+    required this.apis,
+    this.packageFilter,
+    required this.filePath,
+  }) : _matches = {for (final api in apis) api: []};
   final List<String> apis;
   final String? packageFilter;
   final String filePath;
@@ -436,12 +443,6 @@ class _ApiUsageVisitor extends RecursiveAstVisitor<void> {
 
   /// Cache of file lines so we do not re-read for every match in the same file.
   List<String>? _linesCache;
-
-  _ApiUsageVisitor({
-    required this.apis,
-    this.packageFilter,
-    required this.filePath,
-  }) : _matches = {for (final api in apis) api: []};
 
   /// Return the matches collected for [api].
   List<ApiMatch> matchesFor(String api) => _matches[api] ?? const [];
@@ -458,7 +459,7 @@ class _ApiUsageVisitor extends RecursiveAstVisitor<void> {
   void visitInstanceCreationExpression(InstanceCreationExpression node) {
     final constructorName = node.constructorName;
     final typeName = constructorName.type.name2.lexeme;
-    final element = constructorName.staticElement;
+    final element = constructorName.element;
     _checkElementMatch(typeName, element, node);
     super.visitInstanceCreationExpression(node);
   }
@@ -478,7 +479,7 @@ class _ApiUsageVisitor extends RecursiveAstVisitor<void> {
   @override
   void visitNamedType(NamedType node) {
     final name = node.name2.lexeme;
-    final element = node.element;
+    final element = node.element2;
     _checkElementMatch(name, element, node);
     super.visitNamedType(node);
   }
@@ -486,19 +487,19 @@ class _ApiUsageVisitor extends RecursiveAstVisitor<void> {
   // ---- Matching logic -------------------------------------------------------
 
   void _checkIdentifier(SimpleIdentifier identifier, AstNode contextNode) {
-    _checkElementMatch(identifier.name, identifier.staticElement, contextNode);
+    _checkElementMatch(identifier.name, identifier.element, contextNode);
   }
 
-  void _checkElementMatch(String name, Element? element, AstNode node) {
+  void _checkElementMatch(String name, Element2? element, AstNode node) {
     for (final api in apis) {
       final simpleName = _simpleNameOf(api);
       if (name != simpleName) continue;
 
       // Validate against package filter when we have resolved element info.
       if (element != null && packageFilter != null) {
-        final library = element.library;
+        final library = element.library2;
         if (library != null) {
-          final libraryUri = library.identifier;
+          final libraryUri = library.uri.toString();
           if (!libraryUri.contains('package:$packageFilter')) continue;
         }
       }
@@ -517,11 +518,11 @@ class _ApiUsageVisitor extends RecursiveAstVisitor<void> {
   /// Heuristic check that [qualifier] (the part before the dot in
   /// "ClassName.method") matches either the element's enclosing class or the
   /// AST target prefix.
-  bool _qualifierMatches(String qualifier, Element? element, AstNode node) {
+  bool _qualifierMatches(String qualifier, Element2? element, AstNode node) {
     // Try resolved element first.
     if (element != null) {
-      final enclosing = element.enclosingElement3;
-      if (enclosing is InterfaceElement && enclosing.name == qualifier) {
+      final enclosing = element.enclosingElement2;
+      if (enclosing is InterfaceElement2 && enclosing.name3 == qualifier) {
         return true;
       }
       // Static accessors / top-level: the library's defining unit may house
@@ -552,7 +553,7 @@ class _ApiUsageVisitor extends RecursiveAstVisitor<void> {
     return false;
   }
 
-  void _recordMatch(String api, Element? element, AstNode node) {
+  void _recordMatch(String api, Element2? element, AstNode node) {
     final unit = node.thisOrAncestorOfType<CompilationUnit>();
     final lineInfo = unit?.lineInfo;
 
@@ -597,8 +598,8 @@ class _ApiUsageVisitor extends RecursiveAstVisitor<void> {
 
     // Import source (library URI).
     String? importSource;
-    if (element?.library != null) {
-      importSource = element!.library!.identifier;
+    if (element?.library2 != null) {
+      importSource = element!.library2!.uri.toString();
     }
 
     // Line content (lazy-load and cache).
@@ -644,14 +645,14 @@ class _ApiUsageVisitor extends RecursiveAstVisitor<void> {
 /// filtering. Use this when speed matters more than precision (e.g., an
 /// initial triage pass to see if any matches exist at all).
 class _UnresolvedApiVisitor extends RecursiveAstVisitor<void> {
-  final List<String> apis;
-  final String filePath;
-  final Map<String, List<ApiMatch>> _matches;
 
   _UnresolvedApiVisitor({
     required this.apis,
     required this.filePath,
   }) : _matches = {for (final api in apis) api: []};
+  final List<String> apis;
+  final String filePath;
+  final Map<String, List<ApiMatch>> _matches;
 
   List<ApiMatch> matchesFor(String api) => _matches[api] ?? const [];
 

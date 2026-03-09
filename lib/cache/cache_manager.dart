@@ -3,6 +3,7 @@
 /// The memory tier provides fast lookups while the disk tier ensures data
 /// survives process restarts. Entries carry an expiration timestamp and are
 /// transparently evicted when stale.
+library;
 
 import 'dart:convert';
 import 'dart:io';
@@ -14,15 +15,23 @@ import '../utils/logger.dart';
 
 /// A single cached value with expiry and LRU bookkeeping.
 class _CacheEntry {
-  final Map<String, dynamic> value;
-  final DateTime expiresAt;
-  DateTime lastAccessed;
 
   _CacheEntry({
     required this.value,
     required this.expiresAt,
     DateTime? lastAccessed,
   }) : lastAccessed = lastAccessed ?? DateTime.now();
+
+  /// Reconstruct from a JSON map read from disk.
+  factory _CacheEntry.fromJson(Map<String, dynamic> json) {
+    return _CacheEntry(
+      value: (json['value'] as Map<String, dynamic>?) ?? <String, dynamic>{},
+      expiresAt: DateTime.parse(json['expiresAt'] as String),
+    );
+  }
+  final Map<String, dynamic> value;
+  final DateTime expiresAt;
+  DateTime lastAccessed;
 
   /// Whether this entry has passed its TTL.
   bool get isExpired => DateTime.now().isAfter(expiresAt);
@@ -32,14 +41,6 @@ class _CacheEntry {
         'value': value,
         'expiresAt': expiresAt.toIso8601String(),
       };
-
-  /// Reconstruct from a JSON map read from disk.
-  factory _CacheEntry.fromJson(Map<String, dynamic> json) {
-    return _CacheEntry(
-      value: (json['value'] as Map<String, dynamic>?) ?? <String, dynamic>{},
-      expiresAt: DateTime.parse(json['expiresAt'] as String),
-    );
-  }
 }
 
 /// Manages a two-tier (memory + disk) cache with per-entry TTL.
@@ -52,6 +53,25 @@ class _CacheEntry {
 /// final result = await cache.get('key'); // {'data': 42}
 /// ```
 class CacheManager {
+
+  // ---------------------------------------------------------------------------
+  // Construction
+  // ---------------------------------------------------------------------------
+
+  /// Creates a new cache manager.
+  ///
+  /// The cache directory is resolved in order of precedence:
+  /// 1. Explicit [cacheDir] parameter.
+  /// 2. `CACHE_DIR` environment variable.
+  /// 3. `$HOME/.augur/cache`.
+  CacheManager({String? cacheDir})
+      : _cacheDir = cacheDir ??
+            Platform.environment['CACHE_DIR'] ??
+            p.join(
+              Platform.environment['HOME'] ?? '.',
+              '.augur',
+              'cache',
+            );
   /// Directory on disk where cached entries are stored as JSON files.
   final String _cacheDir;
 
@@ -78,25 +98,6 @@ class CacheManager {
 
   /// TTL for Flutter documentation pages.
   static const Duration flutterDocsTtl = Duration(hours: 24);
-
-  // ---------------------------------------------------------------------------
-  // Construction
-  // ---------------------------------------------------------------------------
-
-  /// Creates a new cache manager.
-  ///
-  /// The cache directory is resolved in order of precedence:
-  /// 1. Explicit [cacheDir] parameter.
-  /// 2. `CACHE_DIR` environment variable.
-  /// 3. `$HOME/.augur/cache`.
-  CacheManager({String? cacheDir})
-      : _cacheDir = cacheDir ??
-            Platform.environment['CACHE_DIR'] ??
-            p.join(
-              Platform.environment['HOME'] ?? '.',
-              '.augur',
-              'cache',
-            );
 
   /// The resolved cache directory path.
   String get cacheDir => _cacheDir;

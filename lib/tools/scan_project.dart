@@ -2,9 +2,9 @@ import '../services/pubspec_parser.dart';
 import '../utils/logger.dart';
 
 class ScanProjectTool {
-  final PubspecParser _parser;
 
   ScanProjectTool(this._parser);
+  final PubspecParser _parser;
 
   /// Execute the scan_project tool
   /// Input: projectPath, includeDevDependencies?, includeTransitive?

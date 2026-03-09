@@ -15,15 +15,15 @@ import '../utils/logger.dart';
 /// This tool orchestrates [PubspecParser], [AnalyzeImpactTool], and
 /// [VersionResolver] to produce a comprehensive migration strategy.
 class GenerateMigrationPlanTool {
-  final PubspecParser _pubspecParser;
-  final VersionResolver _versionResolver;
-  final AnalyzeImpactTool _analyzeImpact;
 
   GenerateMigrationPlanTool(
     this._pubspecParser,
     this._versionResolver,
     this._analyzeImpact,
   );
+  final PubspecParser _pubspecParser;
+  final VersionResolver _versionResolver;
+  final AnalyzeImpactTool _analyzeImpact;
 
   /// Execute the generate_migration_plan tool.
   ///
@@ -43,12 +43,12 @@ class GenerateMigrationPlanTool {
     Logger.info('Generating migration plan for ${upgrades.length} upgrade(s)');
 
     if (upgrades.isEmpty) {
-      return MigrationPlan(
-        steps: const [],
+      return const MigrationPlan(
+        steps: [],
         estimatedEffort: EffortLevel.trivial,
         effortDescription: 'No upgrades requested.',
-        prerequisites: const [],
-        warnings: const ['No upgrades were provided.'],
+        prerequisites: [],
+        warnings: ['No upgrades were provided.'],
       ).toJson();
     }
 
@@ -240,8 +240,6 @@ class GenerateMigrationPlanTool {
                         'Update code for $packageName breaking change';
                 final changeSeverity =
                     breakingChange?['severity'] as String? ?? 'major';
-                final changeCategory =
-                    breakingChange?['category'] as String? ?? 'unknown';
                 final affectedApi =
                     breakingChange?['affectedApi'] as String?;
 
@@ -426,7 +424,7 @@ class GenerateMigrationPlanTool {
       inDegree[pkg] = 0;
     }
     for (final entry in dependsOn.entries) {
-      for (final dep in entry.value) {
+      for (final _ in entry.value) {
         inDegree[entry.key] = (inDegree[entry.key] ?? 0) + 1;
       }
     }
@@ -485,7 +483,6 @@ class GenerateMigrationPlanTool {
     Map<String, Map<String, dynamic>> analyses,
   ) {
     var totalLocations = 0;
-    var totalFiles = 0;
     var hasCritical = false;
     var hasHigh = false;
     var breakingChangeCount = 0;
@@ -495,7 +492,6 @@ class GenerateMigrationPlanTool {
 
       totalLocations +=
           (analysis['totalLocationsAffected'] as int?) ?? 0;
-      totalFiles += (analysis['totalFilesAffected'] as int?) ?? 0;
 
       final riskLevel = analysis['riskLevel'] as String?;
       if (riskLevel == 'critical') hasCritical = true;
