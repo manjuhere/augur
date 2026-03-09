@@ -121,17 +121,10 @@ dart pub get
 
 ### Configure your MCP client
 
-**Claude Code** — add to `~/.claude/settings.json`:
+**Claude Code** — run:
 
-```json
-{
-  "mcpServers": {
-    "augur": {
-      "command": "dart",
-      "args": ["pub", "global", "run", "augur:server"]
-    }
-  }
-}
+```bash
+claude mcp add --transport stdio augur --scope user -- dart pub global run augur:server
 ```
 
 **Cursor** — add to `.cursor/mcp.json`:

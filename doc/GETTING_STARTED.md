@@ -56,17 +56,16 @@ If you installed from source, use `"command": "dart"` with `"args": ["run", "/pa
 
 ### Claude Code
 
-Add to `~/.claude/settings.json`:
+Run:
 
-```json
-{
-  "mcpServers": {
-    "augur": {
-      "command": "dart",
-      "args": ["pub", "global", "run", "augur:server"]
-    }
-  }
-}
+```bash
+claude mcp add --transport stdio augur --scope user -- dart pub global run augur:server
+```
+
+This registers Augur across all your projects. To verify:
+
+```bash
+claude mcp list
 ```
 
 ### Cursor
@@ -121,7 +120,13 @@ Follow Windsurf's MCP server configuration. The command and args are the same as
 
 ### With environment variables
 
-For JSON-based clients (Claude Code, Cursor, VS Code), add an `env` block:
+**Claude Code** — pass env vars with `-e`:
+
+```bash
+claude mcp add --transport stdio augur --scope user -e GITHUB_TOKEN=ghp_your_token_here -e LOG_LEVEL=debug -- dart pub global run augur:server
+```
+
+**Cursor / VS Code** — add an `env` block in the JSON config:
 
 ```json
 {
