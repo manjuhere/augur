@@ -157,7 +157,20 @@ dart pub get
 }
 ```
 
-> If you installed from source instead of pub.dev, use `"command": "dart"` with `"args": ["run", "/path/to/augur/bin/server.dart"]`.
+**OpenAI Codex** — run:
+
+```bash
+codex mcp add augur -- augur
+```
+
+Or add to `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.augur]
+command = "augur"
+```
+
+> If you installed from source instead of pub.dev, use `"command": "dart"` with `"args": ["run", "/path/to/augur/bin/server.dart"]` (or for Codex: `command = "dart"` and `args = ["run", "/path/to/augur/bin/server.dart"]`).
 
 For a detailed walkthrough, see [GETTING_STARTED.md](doc/GETTING_STARTED.md).
 

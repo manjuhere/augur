@@ -94,13 +94,39 @@ Add to your VS Code `settings.json`:
 }
 ```
 
+### OpenAI Codex
+
+Add via CLI:
+
+```bash
+codex mcp add augur -- augur
+```
+
+Or add to `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.augur]
+command = "augur"
+```
+
+With environment variables:
+
+```toml
+[mcp_servers.augur]
+command = "augur"
+
+[mcp_servers.augur.env]
+GITHUB_TOKEN = "ghp_your_token_here"
+LOG_LEVEL = "debug"
+```
+
 ### Windsurf
 
 Follow Windsurf's MCP server configuration. The command is the same as above.
 
 ### With environment variables
 
-To pass environment variables (like `GITHUB_TOKEN`), add an `env` block:
+For JSON-based clients (Claude Code, Cursor, VS Code), add an `env` block:
 
 ```json
 {
@@ -115,6 +141,8 @@ To pass environment variables (like `GITHUB_TOKEN`), add an `env` block:
   }
 }
 ```
+
+For Codex, see the TOML example above.
 
 ## Setting Up a GitHub Token (Recommended)
 
